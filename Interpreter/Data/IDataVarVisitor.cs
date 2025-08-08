@@ -1,4 +1,4 @@
-namespace PLT.Interpreter;
+namespace PLT.Interpreter.Data;
 internal interface IDataVarVisitor
 {
     void VisitInt();

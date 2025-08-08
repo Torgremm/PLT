@@ -1,29 +1,72 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Windows.Markup;
+using PLT.Interpreter.Data;
+using System.Text;
 
-namespace PLT.Interpreter;
+namespace PLT.Interpreter.Memory;
 
-internal class MemoryModel : IMemoryModel
+public class MemoryModel
 {
     private const int InitialMemorySize = 1024;
     private byte[] _memory = new byte[InitialMemorySize];
-    private int _memoryPointer = 0;
+    private int _bytePointer = 0;
+    private int _bitPointer = 0;
 
-    public void RegisterVariable(DataVar variableType)
+    public void RegisterVariable(DataVar variableType, object value)
     {
-        int bits = GetBitSize(variableType);
-        int bytes = (bits + 7) / 8;
+        PLCAddress address;
 
-        if (_memoryPointer + bytes > _memory.Length)
-            Array.Resize(ref _memory, _memory.Length * 2);
+        if (variableType == DataVar.BOOL) //Stack and reset for each byte
+        {
+            int byteIndex = _bitPointer / 8;
+            int bitIndex = _bitPointer % 8;
+            address = new PLCAddress(byteIndex, bitIndex, DataVar.BOOL);
+            _bitPointer++;
 
-        _memoryPointer += bytes;
+            EnsureMemoryCapacity(byteIndex + 1);
+        }
+        else
+        {
+            AlignBitPointer();
+
+            int alignment = variableType switch //Siemens stack logic
+            {
+                DataVar.BYTE => 1,
+                DataVar.WORD or DataVar.INT => 2,
+                DataVar.DWORD or DataVar.REAL => 4,
+                _ => throw new ArgumentOutOfRangeException(nameof(variableType))
+            };
+
+            if (_bytePointer % alignment != 0)
+                _bytePointer += alignment - (_bytePointer % alignment);
+
+            address = new PLCAddress(_bytePointer, 0, variableType);
+
+            int bytes = GetBitSize(variableType) / 8;
+            EnsureMemoryCapacity(_bytePointer + bytes);
+
+            _bytePointer += bytes;
+            _bitPointer = _bytePointer * 8;
+        }
+
+        SetValue(address, variableType, value);
     }
 
-    private int GetBitSize(DataVar type) =>
+    private void EnsureMemoryCapacity(int requiredBytes)
+    {
+        if (requiredBytes > _memory.Length)
+        {
+            int newSize = Math.Max(requiredBytes, _memory.Length * 2);
+            Array.Resize(ref _memory, newSize);
+        }
+    }
+    private void AlignBitPointer()
+    {
+        if (_bitPointer % 8 != 0)
+            _bitPointer += 8 - (_bitPointer % 8);
+
+        _bytePointer = _bitPointer / 8;
+    }
+
+    internal int GetBitSize(DataVar type) =>
         type switch
         {
             DataVar.BOOL => 1,
@@ -35,7 +78,7 @@ internal class MemoryModel : IMemoryModel
             _ => throw new ArgumentOutOfRangeException(nameof(type), $"Unsupported type: {type}")
         };
 
-    public void SetBit(PLCAddress address, bool value)
+    internal void SetBit(PLCAddress address, bool value)
     {
         int index = address.Byte;
         int mask = 1 << address.Bit;
@@ -46,7 +89,7 @@ internal class MemoryModel : IMemoryModel
             _memory[index] &= (byte)~mask;
     }
 
-    public bool GetBit(PLCAddress address)
+    internal bool GetBit(PLCAddress address)
     {
         int index = address.Byte;
         int mask = 1 << address.Bit;
@@ -54,7 +97,7 @@ internal class MemoryModel : IMemoryModel
         return (_memory[index] & mask) != 0;
     }
 
-    public void SetValue(PLCAddress address, DataVar type, object value)
+    internal void SetValue(PLCAddress address, DataVar type, object value)
     {
         int byteIndex = address.Byte;
 
@@ -90,7 +133,7 @@ internal class MemoryModel : IMemoryModel
         }
     }
 
-    public T GetValue<T>(PLCAddress address, DataVar type)
+    internal T GetValue<T>(PLCAddress address, DataVar type)
     {
         int byteIndex = address.Byte;
         Span<byte> sourceSpan = _memory.AsSpan(byteIndex);
@@ -109,10 +152,11 @@ internal class MemoryModel : IMemoryModel
         return (T)Convert.ChangeType(result, typeof(T));
     }
 
-    public void Reset()
+    internal void Reset()
     {
         Array.Clear(_memory, 0, _memory.Length);
-        _memoryPointer = 0;
+        _bytePointer = 0;
     }
+
 }
 

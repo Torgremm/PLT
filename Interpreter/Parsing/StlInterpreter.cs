@@ -1,4 +1,8 @@
-namespace PLT.Interpreter;
+using PLT.Interpreter.Data;
+using PLT.Interpreter.Memory;
+using PLT.Interpreter.Data.Operations;
+
+namespace PLT.Interpreter.Parsing;
 
 internal class StlInterpreter : IStlInstructionSet
 {

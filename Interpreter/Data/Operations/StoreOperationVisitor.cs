@@ -1,4 +1,8 @@
-namespace PLT.Interpreter;
+using PLT.Interpreter.Memory;
+using PLT.Interpreter.Parsing;
+
+
+namespace PLT.Interpreter.Data.Operations;
 
 internal class StoreOperationVisitor : AccumulatorOperationVisitorBase
 {

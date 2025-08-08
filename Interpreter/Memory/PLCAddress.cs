@@ -1,6 +1,7 @@
+using PLT.Interpreter.Data;
 using System.Text.RegularExpressions;
 
-namespace PLT.Interpreter;
+namespace PLT.Interpreter.Memory;
 
 internal class PLCAddress
 {

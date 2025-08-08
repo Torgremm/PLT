@@ -1,4 +1,8 @@
-namespace PLT.Interpreter;
+using PLT.Interpreter.Memory;
+using PLT.Interpreter.Parsing;
+
+
+namespace PLT.Interpreter.Data.Operations;
 abstract class AccumulatorOperationVisitorBase : IDataVarVisitor
 {
     protected readonly StlInterpreter Interpreter;

@@ -1,8 +1,8 @@
 namespace PLT.Interpreter;
 
-internal class Parser
+static internal class Parser
 {
-    internal List<Instruction> Parse(string stlCode)
+    static internal List<Instruction> Parse(string stlCode)
     {
         var instructions = new List<Instruction>();
         var lines = stlCode.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);

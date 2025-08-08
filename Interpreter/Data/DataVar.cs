@@ -1,4 +1,4 @@
-namespace PLT.Interpreter;
+namespace PLT.Interpreter.Data;
 public enum DataVar
 {
     BOOL,
@@ -11,7 +11,7 @@ public enum DataVar
 
 internal static class DataVarExtensions
 {
-    internal static void Accept(this DataVar dataVar, IDataVarVisitor visitor)
+    public static void Accept(this DataVar dataVar, IDataVarVisitor visitor)
     {
         switch (dataVar)
         {
