@@ -4,7 +4,7 @@ using PLT.Interpreter.Data.Operations;
 
 namespace PLT.Interpreter.Parsing;
 
-internal class StlInterpreter : IStlInstructionSet
+internal class StlInterpreter
 {
     private readonly MemoryModel _memory;
     private bool _boolAccumulator;

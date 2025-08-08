@@ -3,7 +3,7 @@ using PLT.Interpreter.Data;
 using PLT.Interpreter.Memory;
 using PLT.Interpreter.Parsing;
 
-namespace PLT.Testing;
+namespace PLT.Tests;
 
 public class TestRunner
 {
