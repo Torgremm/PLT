@@ -1,3 +1,5 @@
+using System.Text.RegularExpressions;
+
 namespace PLT.Interpreter;
 
 static internal class Parser
@@ -5,9 +7,12 @@ static internal class Parser
     static internal (List<Instruction> Instructions, Dictionary<string, int> Labels) Parse(string stlCode)
     {
         var instructions = new List<Instruction>();
+        stlCode = FilterOperations(stlCode);
         var labels = new Dictionary<string, int>();
+
         var lines = stlCode.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
         int index = 0;
+
 
         foreach (var rawLine in lines)
         {
@@ -46,6 +51,37 @@ static internal class Parser
         }
 
         return (instructions, labels);
+    }
+
+    private static string FilterOperations(string code)
+    {
+        var comparisonPattern = new Regex(@"(<=|>=|<>|=|<|>)[A-Z]?", RegexOptions.Compiled);
+
+        code = comparisonPattern.Replace(code, match =>
+        {
+            var op = match.Value;
+            // Strip trailing type letter (if any)
+            if (op.Length > 2)
+                op = op.Substring(0, 2);
+
+            return op switch
+            {
+                "<=" => "LEQ",
+                ">=" => "GEQ",
+                "<>" => "NEQ",
+                "==" => "EQ",
+                "<" => "LT",
+                ">" => "GT",
+                "=" => "STORE",
+                "+" => "ADD",
+                "-" => "SUB",
+                "*" => "MUL",
+                "/" => "DIV",
+                _ => op
+            };
+        });
+
+        return code;
     }
 }
 

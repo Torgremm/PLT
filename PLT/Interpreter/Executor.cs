@@ -1,14 +1,22 @@
 using PLT.Interpreter.Parsing;
+using System.Reflection;
 
 namespace PLT.Interpreter;
 
 internal class Executor
 {
     private readonly StlInterpreter _interpreter;
+    private readonly HashSet<string> _dataFlowMethods;
 
     internal Executor(StlInterpreter interpreter)
     {
         _interpreter = interpreter;
+
+        _dataFlowMethods = new HashSet<string>(
+            typeof(StlInterpreter).GetMethods()
+                .Where(m => m.GetCustomAttributes(typeof(JumpInstructionAttribute), false).Any())
+                .Select(m => m.Name),
+            StringComparer.OrdinalIgnoreCase);
     }
     internal class InstructionPointer
     {
@@ -19,35 +27,40 @@ internal class Executor
     {
         var instructionPointer = new InstructionPointer { Value = 0 };
         int cycle = 0;
-        
-        while (instructionPointer.Value < instructions.Count())
+
+        while (instructionPointer.Value < instructions.Count)
         {
             if (cycle++ > 1000)
                 throw new InvalidOperationException("Execution cycle limit exceeded. Possible infinite loop detected.");
 
             var instr = instructions[instructionPointer.Value];
+            var op = instr.OpCode;
+            var operands = instr.Operands ?? Array.Empty<string>();
 
-            object?[] parameters;
-            if (string.Equals(instr.OpCode, "JMPC", StringComparison.OrdinalIgnoreCase))
+            var isDataFlow = _dataFlowMethods.Contains(op);
+
+            var methods = typeof(StlInterpreter).GetMethods()
+                .Where(m => string.Equals(m.Name, op, StringComparison.OrdinalIgnoreCase));
+
+            MethodInfo? method = methods.FirstOrDefault(m =>
             {
-                _interpreter.JMPC(instr.Operands[0], instructionPointer, labels);
-                continue;
-            }
-
-            var operandCount = instr.Operands?.Length ?? 0;
-
-            var method = typeof(StlInterpreter).GetMethods()
-                .FirstOrDefault(m =>
-                    string.Equals(m.Name, instr.OpCode, StringComparison.OrdinalIgnoreCase) &&
-                    m.GetParameters().Length == operandCount);
+                var paramCount = m.GetParameters().Length;
+                return paramCount == (isDataFlow ? operands.Length + 2 : operands.Length); //Make room for pointer and labels in data flow methods
+            });
 
             if (method == null)
-                throw new InvalidOperationException($"Instruction not implemented: {instr.OpCode} with {operandCount} operands.");
+                throw new InvalidOperationException($"Instruction not implemented: {op} with {operands.Length} operands.");
 
+            var parameters = new List<object>();
+            parameters.AddRange(operands.Cast<object>());
 
-            parameters = operandCount == 0 ? Array.Empty<object>() : (instr.Operands ?? Array.Empty<object>()).Cast<object>().ToArray();
+            if (isDataFlow)
+            {
+                parameters.Add(instructionPointer);
+                parameters.Add(labels);
+            }
 
-            method.Invoke(_interpreter, parameters);
+            method.Invoke(_interpreter, parameters.ToArray());
 
             instructionPointer.Value++;
         }
