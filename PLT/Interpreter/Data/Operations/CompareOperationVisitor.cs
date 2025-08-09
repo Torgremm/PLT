@@ -5,24 +5,24 @@ namespace PLT.Interpreter.Data.Operations;
 
 internal class CompareOperationVisitor : AccumulatorOperationVisitorBase
 {
-
+    private const float eps = 0.00001f;
     private readonly ComparisonType _type;
     public CompareOperationVisitor(StlInterpreter interpreter, PLCAddress addr, ComparisonType type) : base(interpreter, addr)
     {
         _type = type;
     }
 
-    private bool Compare<T>(T left, T right) where T : IComparable<T>
+    private bool Compare(float left, float right)
     {
-        int result = left.CompareTo(right);
+        float diff = Math.Abs(left - right);
         return _type switch
         {
-            ComparisonType.Equal => result == 0,
-            ComparisonType.NotEqual => result != 0,
-            ComparisonType.Less => result < 0,
-            ComparisonType.LessOrEqual => result <= 0,
-            ComparisonType.Greater => result > 0,
-            ComparisonType.GreaterOrEqual => result >= 0,
+            ComparisonType.Equal => diff < eps,
+            ComparisonType.NotEqual => diff >= eps,
+            ComparisonType.Less => left < right && diff >= eps,
+            ComparisonType.LessOrEqual => left < right || diff < eps,
+            ComparisonType.Greater => left > right && diff >= eps,
+            ComparisonType.GreaterOrEqual => left > right || diff < eps,
             _ => throw new InvalidOperationException($"Unknown comparison type: {_type}")
         };
     }

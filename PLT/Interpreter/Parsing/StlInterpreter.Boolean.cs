@@ -8,7 +8,7 @@ namespace PLT.Interpreter.Parsing;
 internal partial class StlInterpreter
 {
 
-    public void LDN(string operand)
+    public void LN(string operand)
     {
         _boolAccumulator = !_memory.GetBit(new PLCAddress(operand));
     }
@@ -43,7 +43,17 @@ internal partial class StlInterpreter
         _boolAccumulator = !_boolAccumulator;
     }
 
-    public void SET(string operand)
+    public void SET(string? operand = null)
+    {
+        _boolAccumulator = true;
+    }
+
+    public void CLR(string? operand = null)
+    {
+        _boolAccumulator = false;
+    }
+
+    public void S(string operand)
     {
         _memory.SetBit(new PLCAddress(operand), true);
     }
