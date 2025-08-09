@@ -12,26 +12,26 @@ internal class StoreOperationVisitor : AccumulatorOperationVisitorBase
 
     public override void VisitBool()
     {
-        Interpreter.GetMemory().SetBit(Addr, Interpreter.GetBoolAccumulator());
+        Interpreter.GetMemory().SetBit(Addr, Interpreter.GetAccumulator1());
     }
 
     public override void VisitInt()
     {
-        Interpreter.GetMemory().SetValue(Addr, DataVar.INT, Interpreter.GetIntAccumulator());
+        Interpreter.GetMemory().SetValue(Addr, DataVar.INT, Interpreter.GetIntAccumulator1());
     }
 
     public override void VisitWord()
     {
-        Interpreter.GetMemory().SetValue(Addr, DataVar.WORD, Interpreter.GetIntAccumulator());
+        Interpreter.GetMemory().SetValue(Addr, DataVar.WORD, Interpreter.GetIntAccumulator1());
     }
 
     public override void VisitDWord()
     {
-        Interpreter.GetMemory().SetValue(Addr, DataVar.DWORD, Interpreter.GetUIntAccumulator());
+        Interpreter.GetMemory().SetValue(Addr, DataVar.DWORD, Interpreter.GetUIntAccumulator1());
     }
 
     public override void VisitReal()
     {
-        Interpreter.GetMemory().SetValue(Addr, DataVar.REAL, Interpreter.GetFloatAccumulator());
+        Interpreter.GetMemory().SetValue(Addr, DataVar.REAL, Interpreter.GetFloatAccumulator1());
     }
 }

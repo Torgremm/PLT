@@ -8,36 +8,46 @@ namespace PLT.Interpreter.Parsing;
 internal partial class StlInterpreter
 {
     private readonly MemoryModel _memory;
-    private bool _boolAccumulator;
-    private bool _boolAccumulator2;
-    private int _intAccumulator;
-    private int _intAccumulator2;
-    private uint _uIntAccumulator;
-    private uint _uIntAccumulator2;
-    private float _floatAccumulator;
-    private float _floatAccumulator2;
+    private int _accu1;
+    private int _accu2;
 
     internal MemoryModel GetMemory() => _memory;
 
-    internal bool GetBoolAccumulator() => _boolAccumulator;
-    internal void SetBoolAccumulator(bool value) => _boolAccumulator = value;
-    internal bool GetBoolAccumulator2() => _boolAccumulator2;
-    internal void SetBoolAccumulator2(bool value) => _boolAccumulator2 = value;
+    internal bool GetAccumulator1() => (_accu1 & 1) != 0;
+    internal void SetAccumulator1(bool value)
+    {
+        if (value)
+            _accu1 |= 1;
+        else
+            _accu1 &= ~1;
+    }
 
-    internal int GetIntAccumulator() => _intAccumulator;
-    internal void SetIntAccumulator(int value) => _intAccumulator = value;
-    internal int GetIntAccumulator2() => _intAccumulator2;
-    internal void SetIntAccumulator2(int value) => _intAccumulator2 = value;
+    internal bool GetAccumulator2() => (_accu2 & 1) != 0;
+    internal void SetAccumulator2(bool value)
+    {
+        if (value)
+            _accu2 |= 1;
+        else
+            _accu2 &= ~1;
+    }
 
-    internal uint GetUIntAccumulator() => _uIntAccumulator;
-    internal void SetUIntAccumulator(uint value) => _uIntAccumulator = value;
-    internal uint GetUIntAccumulator2() => _uIntAccumulator2;
-    internal void SetUIntAccumulator2(uint value) => _uIntAccumulator2 = value;
+    internal int GetIntAccumulator1() => _accu1;
+    internal void SetIntAccumulator1(int value) => _accu1 = value;
 
-    internal float GetFloatAccumulator() => _floatAccumulator;
-    internal void SetFloatAccumulator(float value) => _floatAccumulator = value;
-    internal float GetFloatAccumulator2() => _floatAccumulator2;
-    internal void SetFloatAccumulator2(float value) => _floatAccumulator2 = value;
+    internal int GetIntAccumulator2() => _accu2;
+    internal void SetIntAccumulator2(int value) => _accu2 = value;
+
+    internal uint GetUIntAccumulator1() => unchecked((uint)_accu1);
+    internal void SetUIntAccumulator1(uint value) => _accu1 = unchecked((int)value);
+
+    internal uint GetUIntAccumulator2() => unchecked((uint)_accu2);
+    internal void SetUIntAccumulator2(uint value) => _accu2 = unchecked((int)value);
+
+    internal float GetFloatAccumulator1() => BitConverter.Int32BitsToSingle(_accu1);
+    internal void SetFloatAccumulator1(float value) => _accu1 = BitConverter.SingleToInt32Bits(value);
+
+    internal float GetFloatAccumulator2() => BitConverter.Int32BitsToSingle(_accu2);
+    internal void SetFloatAccumulator2(float value) => _accu2 = BitConverter.SingleToInt32Bits(value);
 
     public StlInterpreter(MemoryModel memory)
     {

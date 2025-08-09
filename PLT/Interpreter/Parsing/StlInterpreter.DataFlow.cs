@@ -28,7 +28,7 @@ internal partial class StlInterpreter
     [JumpInstruction]
     public void JC(string label, Executor.InstructionPointer instructionPointer, Dictionary<string, int> labels)
     {
-        if (_boolAccumulator)
+        if (GetAccumulator1())
         {
             if (!labels.TryGetValue(label, out var targetIndex))
                 throw new InvalidOperationException($"Label not found: {label}");
@@ -40,7 +40,7 @@ internal partial class StlInterpreter
     [JumpInstruction]
     public void JCN(string label, Executor.InstructionPointer instructionPointer, Dictionary<string, int> labels)
     {
-        if (!_boolAccumulator)
+        if (!GetAccumulator1())
         {
             if (!labels.TryGetValue(label, out var targetIndex))
                 throw new InvalidOperationException($"Label not found: {label}");

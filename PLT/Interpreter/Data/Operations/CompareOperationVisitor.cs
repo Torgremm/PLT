@@ -29,38 +29,38 @@ internal class CompareOperationVisitor : AccumulatorOperationVisitorBase
 
     public override void VisitInt()
     {
-        var ac1 = Interpreter.GetIntAccumulator();
+        var ac1 = Interpreter.GetIntAccumulator1();
         var ac2 = Interpreter.GetMemory().GetValue<int>(Addr, DataVar.INT);
         Interpreter.SetIntAccumulator2(ac2);
 
-        Interpreter.SetBoolAccumulator(Compare(ac1, ac2));
+        Interpreter.SetAccumulator1(Compare(ac1, ac2));
     }
 
     public override void VisitWord()
     {
-        var ac1 = Interpreter.GetIntAccumulator();
+        var ac1 = Interpreter.GetIntAccumulator1();
         var ac2 = Interpreter.GetMemory().GetValue<int>(Addr, DataVar.WORD);
         Interpreter.SetIntAccumulator2(ac2);
 
-        Interpreter.SetBoolAccumulator(Compare(ac1, ac2));
+        Interpreter.SetAccumulator1(Compare(ac1, ac2));
     }
 
     public override void VisitDWord()
     {
-        var ac1 = Interpreter.GetUIntAccumulator();
+        var ac1 = Interpreter.GetUIntAccumulator1();
         var ac2 = Interpreter.GetMemory().GetValue<uint>(Addr, DataVar.DWORD);
         Interpreter.SetUIntAccumulator2(ac2);
 
-        Interpreter.SetBoolAccumulator(Compare(ac1, ac2));
+        Interpreter.SetAccumulator1(Compare(ac1, ac2));
     }
 
     public override void VisitReal()
     {
-        var ac1 = Interpreter.GetFloatAccumulator();
+        var ac1 = Interpreter.GetFloatAccumulator1();
         var ac2 = Interpreter.GetMemory().GetValue<float>(Addr, DataVar.REAL);
         Interpreter.SetFloatAccumulator2(ac2);
 
-        Interpreter.SetBoolAccumulator(Compare(ac1,ac2)); //Tolerance needed?
+        Interpreter.SetAccumulator1(Compare(ac1,ac2));
     }
 
     public override void VisitBool()
