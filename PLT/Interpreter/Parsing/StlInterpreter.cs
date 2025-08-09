@@ -1,6 +1,7 @@
 using PLT.Interpreter.Data;
 using PLT.Interpreter.Memory;
 using PLT.Interpreter.Data.Operations;
+using PLT.Interpreter;
 
 namespace PLT.Interpreter.Parsing;
 
@@ -25,8 +26,6 @@ internal class StlInterpreter
 
     internal float GetFloatAccumulator() => _floatAccumulator;
     internal void SetFloatAccumulator(float value) => _floatAccumulator = value;
-
-
 
     public StlInterpreter(MemoryModel memory)
     {
@@ -91,7 +90,7 @@ internal class StlInterpreter
         _memory.SetBit(new PLCAddress(operand), false);
     }
 
-    public void NOP(string? operand = null) { }
+    public void NOP() { }
 
     public void ADD(string operand)
     {
@@ -113,4 +112,20 @@ internal class StlInterpreter
         sourceAddr.DataType.Accept(new LoadOperationVisitor(this, sourceAddr));
         destAddr.DataType.Accept(new StoreOperationVisitor(this, destAddr));
     }
+
+    public void JMPC(string label, Executor.InstructionPointer instructionPointer, Dictionary<string, int> labels)
+    {
+        if (_boolAccumulator)
+        {
+            if (!labels.TryGetValue(label, out var targetIndex))
+                throw new InvalidOperationException($"Label not found: {label}");
+
+            instructionPointer.Value = targetIndex + 1; //Run the instruction following the label
+        }
+        else
+        {
+            instructionPointer.Value++;
+        }
+    }
+
 }

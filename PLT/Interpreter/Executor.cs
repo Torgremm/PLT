@@ -10,24 +10,46 @@ internal class Executor
     {
         _interpreter = interpreter;
     }
-
-    internal void Execute(List<Instruction> instructions)
+    internal class InstructionPointer
     {
-        foreach (var instr in instructions)
+        public int Value { get; set; }
+    }
+
+    internal void Execute(List<Instruction> instructions, Dictionary<string, int> labels)
+    {
+        var instructionPointer = new InstructionPointer { Value = 0 };
+        int cycle = 0;
+        
+        while (instructionPointer.Value < instructions.Count())
         {
+            if (cycle++ > 1000)
+                throw new InvalidOperationException("Execution cycle limit exceeded. Possible infinite loop detected.");
+
+            var instr = instructions[instructionPointer.Value];
+
+            object?[] parameters;
+            if (string.Equals(instr.OpCode, "JMPC", StringComparison.OrdinalIgnoreCase))
+            {
+                _interpreter.JMPC(instr.Operands[0], instructionPointer, labels);
+                continue;
+            }
+
             var operandCount = instr.Operands?.Length ?? 0;
 
             var method = typeof(StlInterpreter).GetMethods()
-                .FirstOrDefault(m => 
+                .FirstOrDefault(m =>
                     string.Equals(m.Name, instr.OpCode, StringComparison.OrdinalIgnoreCase) &&
                     m.GetParameters().Length == operandCount);
 
             if (method == null)
                 throw new InvalidOperationException($"Instruction not implemented: {instr.OpCode} with {operandCount} operands.");
 
-            object?[] parameters = operandCount == 0 ? Array.Empty<object>() : (instr.Operands ?? Array.Empty<object>()).Cast<object>().ToArray();
+
+            parameters = operandCount == 0 ? Array.Empty<object>() : (instr.Operands ?? Array.Empty<object>()).Cast<object>().ToArray();
 
             method.Invoke(_interpreter, parameters);
+
+            instructionPointer.Value++;
         }
     }
 }

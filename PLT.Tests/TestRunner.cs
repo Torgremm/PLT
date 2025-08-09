@@ -9,6 +9,7 @@ public class TestRunner
 {
     private readonly string _stlCode = default!;
     private readonly List<Instruction> _instructions = default!;
+    private readonly Dictionary<string, int> _labels = new();
     private readonly Executor _executor = default!;
     private readonly StlInterpreter _interpreter = default!;
     private readonly MemoryModel _memory = default!;
@@ -19,13 +20,12 @@ public class TestRunner
         _stlCode = STLCode;
         _interpreter = new StlInterpreter(_memory);
         _executor = new Executor(_interpreter);
-        _instructions = Parser.Parse(_stlCode);
-
+        (_instructions, _labels) = Parser.Parse(_stlCode);
     }
 
     public bool Execute()
     {
-        _executor.Execute(_instructions);
+        _executor.Execute(_instructions, _labels);
         return true;
     }
 }

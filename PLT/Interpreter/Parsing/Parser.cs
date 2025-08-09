@@ -2,10 +2,12 @@ namespace PLT.Interpreter;
 
 static internal class Parser
 {
-    static internal List<Instruction> Parse(string stlCode)
+    static internal (List<Instruction> Instructions, Dictionary<string, int> Labels) Parse(string stlCode)
     {
         var instructions = new List<Instruction>();
+        var labels = new Dictionary<string, int>();
         var lines = stlCode.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+        int index = 0;
 
         foreach (var rawLine in lines)
         {
@@ -13,6 +15,16 @@ static internal class Parser
 
             if (string.IsNullOrWhiteSpace(line) || line.StartsWith("//"))
                 continue;
+
+            if (line.EndsWith(':'))
+            {
+                var label = line.TrimEnd(':');
+                if (!labels.ContainsKey(label))
+                {
+                    labels[label] = index;
+                }
+                continue;
+            }
 
             var parts = line.Split(' ', 2, StringSplitOptions.RemoveEmptyEntries);
             if (parts.Length == 0)
@@ -30,9 +42,10 @@ static internal class Parser
             }
 
             instructions.Add(new Instruction(op, operands));
+            index++;
         }
 
-        return instructions;
+        return (instructions, labels);
     }
 }
 
