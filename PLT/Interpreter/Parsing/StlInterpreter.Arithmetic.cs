@@ -7,28 +7,37 @@ namespace PLT.Interpreter.Parsing;
 
 internal partial class StlInterpreter
 {
+
+    private static readonly PLCAddress dummyAddress = new PLCAddress("MW0");
+    private DataVar GetDataVar(string c)
+    {
+        return c switch
+        {
+            "D" => DataVar.INT,
+            "I" => DataVar.SHORT,
+            "R" => DataVar.REAL,
+            _ => throw new NotSupportedException($"Data type '{c}' is not supported.")
+        };
+    }
+
     public void ADD(string operand)
     {
-        var addr = new PLCAddress(operand);
-        addr.DataType.Accept(new MathOperationVisitor(this, addr, MathOperationType.ADD));
+        GetDataVar(operand).Accept(new MathOperationVisitor(this, dummyAddress, MathOperationType.ADD));
     }
 
     public void SUB(string operand)
     {
-        var addr = new PLCAddress(operand);
-        addr.DataType.Accept(new MathOperationVisitor(this, addr, MathOperationType.SUB));
+        GetDataVar(operand).Accept(new MathOperationVisitor(this, dummyAddress, MathOperationType.SUB));
     }
 
     public void MUL(string operand)
     {
-        var addr = new PLCAddress(operand);
-        addr.DataType.Accept(new MathOperationVisitor(this, addr, MathOperationType.MUL));
+        GetDataVar(operand).Accept(new MathOperationVisitor(this, dummyAddress, MathOperationType.MUL));
     }
 
     public void DIV(string operand)
     {
-        var addr = new PLCAddress(operand);
-        addr.DataType.Accept(new MathOperationVisitor(this, addr, MathOperationType.DIV));
+        GetDataVar(operand).Accept(new MathOperationVisitor(this, dummyAddress, MathOperationType.DIV));
     }
 
 }

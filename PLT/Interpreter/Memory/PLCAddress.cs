@@ -68,7 +68,7 @@ internal class PLCAddress
             "MX" => DataVar.BOOL,
             "M" when bitGroup.Success => DataVar.BOOL,
             "MB" => DataVar.BYTE,
-            "MW" => DataVar.INT,
+            "MW" => DataVar.SHORT,
             "MD" => DataVar.REAL,
             "M" => DataVar.BYTE,
             _ => throw new FormatException($"Unknown prefix: {prefix}")

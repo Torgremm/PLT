@@ -27,7 +27,11 @@ internal partial class StlInterpreter
     [JumpInstruction]
     public void JL(string label, Executor.InstructionPointer instructionPointer, Dictionary<string, int> labels)
     {
-        throw new NotImplementedException($"");
+        throw new NotImplementedException($"JL instruction is not implemented yet. Label: {label}");
+
+        //int currentIndex = instructionPointer.Value;
+        //int low8 = GetShortAccumulator1() & 0xFF;
+
         //CASE TYPE LIST
         //JL LABEL : IF OUT OF RANGE
         //JU LABEL : IF ACCU1 LOW 8 = 0

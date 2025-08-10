@@ -56,11 +56,12 @@ static internal class Parser
     private static string FilterOperations(string code)
     {
         var comparisonPattern = new Regex(@"(<=|>=|<>|=|<|>)[A-Z]?", RegexOptions.Compiled);
+        var typedMathPattern = new Regex(@"([\+\-\*/])([A-Z])?", RegexOptions.Compiled);
 
         code = comparisonPattern.Replace(code, match =>
         {
             var op = match.Value;
-            // Strip trailing type letter (if any)
+
             if (op.Length > 2)
                 op = op.Substring(0, 2);
 
@@ -73,12 +74,23 @@ static internal class Parser
                 "<" => "LT",
                 ">" => "GT",
                 "=" => "STORE",
+                _ => op
+            };
+        });
+
+        code = typedMathPattern.Replace(code, match =>
+        {
+            var op = match.Groups[1].Value switch
+            {
                 "+" => "ADD",
                 "-" => "SUB",
                 "*" => "MUL",
                 "/" => "DIV",
-                _ => op
+                _ => throw new InvalidOperationException()
             };
+
+            var type = match.Groups[2].Value;
+            return $"{op} {type}";
         });
 
         return code;
