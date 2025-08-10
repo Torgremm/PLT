@@ -1,12 +1,15 @@
 namespace PLT.Interpreter.Data;
+
 public enum DataVar
 {
     BOOL,
     BYTE,
     WORD,
     INT,
+    SHORT,
     DWORD,
-    REAL
+    REAL,
+    COUNTER,
 }
 
 internal static class DataVarExtensions
@@ -20,6 +23,9 @@ internal static class DataVarExtensions
                 break;
             case DataVar.INT:
                 visitor.VisitInt();
+                break;
+            case DataVar.SHORT:
+                visitor.VisitShort();
                 break;
             case DataVar.WORD:
                 visitor.VisitWord();

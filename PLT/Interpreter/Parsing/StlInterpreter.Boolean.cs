@@ -53,14 +53,14 @@ internal partial class StlInterpreter
         SetAccumulator1(false);
     }
 
-    public void S(string operand)
-    {
-        _memory.SetBit(new PLCAddress(operand), true);
-    }
+    // public void S(string operand)
+    // {
+    //     _memory.SetBit(new PLCAddress(operand), true);
+    // }
 
-    public void R(string operand)
-    {
-        _memory.SetBit(new PLCAddress(operand), false);
-    }
+    // public void R(string operand)
+    // {
+    //     _memory.SetBit(new PLCAddress(operand), false);
+    // }
 
 }

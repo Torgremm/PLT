@@ -1,5 +1,6 @@
 using PLT.Interpreter.Memory;
 using PLT.Interpreter.Parsing;
+using System.Numerics;
 
 namespace PLT.Interpreter.Data.Operations;
 
@@ -12,7 +13,35 @@ internal class CompareOperationVisitor : AccumulatorOperationVisitorBase
         _type = type;
     }
 
-    private bool Compare(float left, float right)
+    private bool CompareSigned<T>(T left, T right) where T : IBinaryInteger<T>
+    {
+        return _type switch
+        {
+            ComparisonType.Equal => left == right,
+            ComparisonType.NotEqual => left != right,
+            ComparisonType.Less => left < right,
+            ComparisonType.LessOrEqual => left <= right,
+            ComparisonType.Greater => left > right,
+            ComparisonType.GreaterOrEqual => left >= right,
+            _ => throw new InvalidOperationException($"Unknown comparison type: {_type}")
+        };
+    }
+
+    private bool CompareUnsigned<T>(T left, T right) where T : IBinaryInteger<T>, IUnsignedNumber<T>
+    {
+        return _type switch
+        {
+            ComparisonType.Equal => left == right,
+            ComparisonType.NotEqual => left != right,
+            ComparisonType.Less => left < right,
+            ComparisonType.LessOrEqual => left <= right,
+            ComparisonType.Greater => left > right,
+            ComparisonType.GreaterOrEqual => left >= right,
+            _ => throw new InvalidOperationException($"Unknown comparison type: {_type}")
+        };
+    }
+
+    private bool CompareReal(float left, float right)
     {
         float diff = Math.Abs(left - right);
         return _type switch
@@ -33,16 +62,25 @@ internal class CompareOperationVisitor : AccumulatorOperationVisitorBase
         var ac2 = Interpreter.GetMemory().GetValue<int>(Addr, DataVar.INT);
         Interpreter.SetIntAccumulator2(ac2);
 
-        Interpreter.SetAccumulator1(Compare(ac1, ac2));
+        Interpreter.SetAccumulator1(CompareSigned(ac1, ac2));
+    }
+
+    public override void VisitShort()
+    {
+        var ac1 = Interpreter.GetShortAccumulator1();
+        var ac2 = Interpreter.GetMemory().GetValue<short>(Addr, DataVar.SHORT);
+        Interpreter.SetShortAccumulator2(ac2);
+
+        Interpreter.SetAccumulator1(CompareSigned(ac1, ac2));
     }
 
     public override void VisitWord()
     {
-        var ac1 = Interpreter.GetIntAccumulator1();
-        var ac2 = Interpreter.GetMemory().GetValue<int>(Addr, DataVar.WORD);
-        Interpreter.SetIntAccumulator2(ac2);
+        var ac1 = Interpreter.GetUShortAccumulator1();
+        var ac2 = Interpreter.GetMemory().GetValue<ushort>(Addr, DataVar.WORD);
+        Interpreter.SetUShortAccumulator2(ac2);
 
-        Interpreter.SetAccumulator1(Compare(ac1, ac2));
+        Interpreter.SetAccumulator1(CompareUnsigned(ac1, ac2));
     }
 
     public override void VisitDWord()
@@ -51,7 +89,7 @@ internal class CompareOperationVisitor : AccumulatorOperationVisitorBase
         var ac2 = Interpreter.GetMemory().GetValue<uint>(Addr, DataVar.DWORD);
         Interpreter.SetUIntAccumulator2(ac2);
 
-        Interpreter.SetAccumulator1(Compare(ac1, ac2));
+        Interpreter.SetAccumulator1(CompareUnsigned(ac1, ac2));
     }
 
     public override void VisitReal()
@@ -60,7 +98,7 @@ internal class CompareOperationVisitor : AccumulatorOperationVisitorBase
         var ac2 = Interpreter.GetMemory().GetValue<float>(Addr, DataVar.REAL);
         Interpreter.SetFloatAccumulator2(ac2);
 
-        Interpreter.SetAccumulator1(Compare(ac1,ac2));
+        Interpreter.SetAccumulator1(CompareReal(ac1,ac2));
     }
 
     public override void VisitBool()

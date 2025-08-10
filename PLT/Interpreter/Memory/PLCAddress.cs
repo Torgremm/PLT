@@ -3,23 +3,47 @@ using System.Text.RegularExpressions;
 
 namespace PLT.Interpreter.Memory;
 
+public enum MemoryArea
+{
+    Data,
+    Counter
+}
+
 internal class PLCAddress
 {
     public int Byte { get; private set; }
     public int Bit { get; private set; } = 0;
     public DataVar DataType { get; }
+    public MemoryArea MemoryArea { get; } = MemoryArea.Data;
 
-    public PLCAddress(int byteIndex, int bitIndex = 0, DataVar dataType = DataVar.BOOL)
+    public PLCAddress(int byteIndex, int bitIndex = 0, DataVar dataType = DataVar.BOOL, MemoryArea memoryArea = MemoryArea.Data)
     {
         Byte = byteIndex;
         Bit = bitIndex;
         DataType = dataType;
+        MemoryArea = memoryArea;
     }
 
 
     public PLCAddress(string s)
     {
         s = s.Trim().ToUpperInvariant();
+
+        var counterPattern = @"^C(\d+)$";
+        var counterMatch = Regex.Match(s, counterPattern);
+
+        if (counterMatch.Success)
+        {
+            if (!int.TryParse(counterMatch.Groups[1].Value, out int counterIndex))
+                throw new FormatException($"Invalid counter index: {counterMatch.Groups[1].Value}");
+
+            Byte = counterIndex * 2;
+            Bit = 0;
+            DataType = DataVar.WORD;
+            MemoryArea = MemoryArea.Counter;
+            return;
+        }
+
 
         // ^(?<prefix>MX|MB|MW|MD|M)  — prefix
         // (?<addr>\d+)               — byte address

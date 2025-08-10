@@ -20,9 +20,14 @@ internal class StoreOperationVisitor : AccumulatorOperationVisitorBase
         Interpreter.GetMemory().SetValue(Addr, DataVar.INT, Interpreter.GetIntAccumulator1());
     }
 
+    public override void VisitShort()
+    {
+        Interpreter.GetMemory().SetValue(Addr, DataVar.SHORT, Interpreter.GetShortAccumulator1());
+    }
+
     public override void VisitWord()
     {
-        Interpreter.GetMemory().SetValue(Addr, DataVar.WORD, Interpreter.GetIntAccumulator1());
+        Interpreter.GetMemory().SetValue(Addr, DataVar.WORD, Interpreter.GetUShortAccumulator1());
     }
 
     public override void VisitDWord()

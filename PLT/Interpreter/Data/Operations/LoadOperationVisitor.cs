@@ -20,10 +20,21 @@ internal class LoadOperationVisitor : AccumulatorOperationVisitorBase
         Interpreter.SetIntAccumulator1(value);
     }
 
+    public override void VisitShort()
+    {
+        var value = Interpreter.GetMemory().GetValue<short>(Addr, DataVar.SHORT);
+        Interpreter.SetShortAccumulator1(value);
+    }
+
     public override void VisitWord()
     {
-        var value = Interpreter.GetMemory().GetValue<int>(Addr, DataVar.WORD);
-        Interpreter.SetIntAccumulator1(value);
+        ushort value;
+        if (Addr.MemoryArea != MemoryArea.Counter)
+            value = Interpreter.GetMemory().GetValue<ushort>(Addr, DataVar.WORD);
+        else
+            value = Interpreter.GetMemory().GetCounter(Addr);
+
+        Interpreter.SetUShortAccumulator1(value);
     }
 
     public override void VisitDWord()

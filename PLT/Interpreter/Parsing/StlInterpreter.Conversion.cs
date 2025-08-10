@@ -67,23 +67,18 @@ internal partial class StlInterpreter
 
     public void NEGI()
     {
-        uint current = GetUIntAccumulator1();
-
-        short low16 = (short)(current & 0xFFFF);
-        short negated = unchecked((short)-low16);
-
+        short value = GetShortAccumulator1();
+        short negated = unchecked((short)-value);
         SetIntAccumulator1(negated);
     }
 
     public void INVI()
     {
-        uint current = GetUIntAccumulator1();
-
-        ushort low16 = (ushort)(current & 0xFFFF);
-        ushort inverted = (ushort)~low16;
-
+        ushort value = GetUShortAccumulator1();
+        ushort inverted = (ushort)~value;
         SetIntAccumulator1((short)inverted);
     }
+
 
     public void INVD()
     {
@@ -123,9 +118,8 @@ internal partial class StlInterpreter
 
     public void ITD()
     {
-        short input = (short)(GetUIntAccumulator1() & 0xFFFF);
-        int result = input;
-        SetIntAccumulator1(result);
+        short input = GetShortAccumulator1();
+        SetIntAccumulator1(input);
     }
 
     public void BTD()
@@ -155,19 +149,38 @@ internal partial class StlInterpreter
 
     public void ITB()
     {
-        int value = GetIntAccumulator1();
-        uint absValue = (uint)Math.Abs(value);
+        short value = GetShortAccumulator1();
+        ushort absValue = (ushort)Math.Abs(value);
+        ushort bcdResult = 0;
+
+        for (int digitIndex = 0; digitIndex < 3; digitIndex++)
+        {
+            ushort digit = (ushort)(absValue % 10);
+            absValue /= 10;
+
+            bcdResult |= (ushort)(digit << (digitIndex * 4));
+        }
+
+        ushort signBits = value < 0 ? (ushort)0xF000 : (ushort)0;
+
+        ushort result = (ushort)(bcdResult | signBits);
+
+        SetUShortAccumulator1(result);
+    }
+
+    public void ITB(ushort wordValue) //Hopefuly this is never invoked by the Executor since it is 2nd?
+    {
+        uint absValue = wordValue; // no sign
         uint bcdResult = 0;
 
         for (int digitIndex = 0; digitIndex < 3; digitIndex++)
         {
             uint digit = absValue % 10;
             absValue /= 10;
-
             bcdResult |= digit << (digitIndex * 4);
         }
 
-        uint signBits = value < 0 ? 0xF000u : 0;
+        uint signBits = 0;
 
         uint result = bcdResult | signBits;
 
@@ -176,28 +189,24 @@ internal partial class StlInterpreter
 
     public void BTI()
     {
-        uint fullValue = GetUIntAccumulator1();
+        ushort fullValue = GetUShortAccumulator1();
 
-        uint bcdValue = fullValue & 0x00000FFFu;
-        uint signs = (fullValue >> 12) & 0xFu;
+        ushort bcdValue = (ushort)(fullValue & 0x0FFF);
+        ushort signs = (ushort)((fullValue >> 12) & 0xF);
 
-        uint val = 0;
-        uint mult = 1;
+        int val = 0;
+        int mult = 1;
 
         for (int digitIndex = 0; digitIndex < 3; digitIndex++)
         {
-            uint digit = (bcdValue >> (digitIndex * 4)) & 0xF;
+            int digit = (bcdValue >> (digitIndex * 4)) & 0xF;
             val += digit * mult;
             mult *= 10;
         }
 
-        int result;
-        if (signs == 0xF)
-            result = -(int)val;
-        else
-            result = (int)val;
+        short result = signs == 0xF ? (short)(-val) : (short)val;
 
-        SetIntAccumulator1(result);
+        SetShortAccumulator1(result);
     }
 
 }

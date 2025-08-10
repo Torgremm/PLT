@@ -37,11 +37,23 @@ internal partial class StlInterpreter
     internal int GetIntAccumulator2() => _accu2;
     internal void SetIntAccumulator2(int value) => _accu2 = value;
 
+    internal short GetShortAccumulator1() => unchecked((short)_accu1);
+    internal void SetShortAccumulator1(short value) => _accu1 = unchecked((int)value);
+    internal short GetShortAccumulator2() => unchecked((short)_accu2);
+    internal void SetShortAccumulator2(short value) => _accu2 = unchecked((int)value);
+
+
     internal uint GetUIntAccumulator1() => unchecked((uint)_accu1);
     internal void SetUIntAccumulator1(uint value) => _accu1 = unchecked((int)value);
 
     internal uint GetUIntAccumulator2() => unchecked((uint)_accu2);
     internal void SetUIntAccumulator2(uint value) => _accu2 = unchecked((int)value);
+
+    internal ushort GetUShortAccumulator1() => unchecked((ushort)_accu1);
+    internal void SetUShortAccumulator1(ushort value) => _accu1 = unchecked((int)value);
+
+    internal ushort GetUShortAccumulator2() => unchecked((ushort)_accu2);
+    internal void SetUShortAccumulator2(ushort value) => _accu2 = unchecked((int)value);
 
     internal float GetFloatAccumulator1() => BitConverter.Int32BitsToSingle(_accu1);
     internal void SetFloatAccumulator1(float value) => _accu1 = BitConverter.SingleToInt32Bits(value);

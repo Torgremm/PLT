@@ -3,7 +3,7 @@ using System.Text;
 
 namespace PLT.Interpreter.Memory;
 
-public class MemoryModel
+public partial class MemoryModel
 {
     private const int InitialMemorySize = 1024;
     private byte[] _memory = new byte[InitialMemorySize];
@@ -155,6 +155,7 @@ public class MemoryModel
     internal void Reset()
     {
         Array.Clear(_memory, 0, _memory.Length);
+        Array.Clear(_counterMemory, 0, _counterMemory.Length);
         _bytePointer = 0;
     }
 

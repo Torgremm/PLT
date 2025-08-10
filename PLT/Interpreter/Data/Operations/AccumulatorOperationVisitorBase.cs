@@ -15,6 +15,7 @@ abstract class AccumulatorOperationVisitorBase : IDataVarVisitor
     }
 
     public abstract void VisitInt();
+    public abstract void VisitShort();
     public abstract void VisitWord();
     public abstract void VisitDWord();
     public abstract void VisitReal();
