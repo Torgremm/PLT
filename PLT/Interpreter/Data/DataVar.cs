@@ -8,8 +8,7 @@ public enum DataVar
     INT,
     SHORT,
     DWORD,
-    REAL,
-    COUNTER,
+    REAL
 }
 
 internal static class DataVarExtensions

@@ -13,12 +13,13 @@ public class BasicOperationsTests
     public void AddTwoIntegers()
     {
         var memory = new MemoryModel();
-        memory.RegisterVariable(DataVar.INT, 8); // MW0 - Load
-        memory.RegisterVariable(DataVar.INT, 2); // MW2 - Value to Add
+        memory.RegisterVariable(DataVar.SHORT, 8); // MW0 - Load
+        memory.RegisterVariable(DataVar.SHORT, 2); // MW2 - Value to Add
 
         var stlCode = new StringBuilder()
             .AppendLine("L      MW0")    // Load MW0-8 to accumulator
-            .AppendLine("ADD    MW2")    // Add MW2-2 from accumulator
+            .AppendLine("L      MW2")    // Load MW2-2 to accumulator
+            .AppendLine("ADD    MW2")    // Add MW2-2 from accumulator :: QUIRK FOR NOW
             .AppendLine("=      MW0")    // Store result in MW0
             .ToString();
 
@@ -26,7 +27,7 @@ public class BasicOperationsTests
 
         runner.Execute();
 
-        short result = memory.GetValue<short>(new PLCAddress("MW0"), DataVar.INT);
+        short result = memory.GetValue<short>(new PLCAddress("MW0"), DataVar.SHORT);
         Assert.Equal(10, result);
     }
 
@@ -34,11 +35,12 @@ public class BasicOperationsTests
     public void SubtractTwoIntegers()
     {
         var memory = new MemoryModel();
-        memory.RegisterVariable(DataVar.INT, 2); // MW0 - Load
-        memory.RegisterVariable(DataVar.INT, 8); // MW2 - Value to Add
+        memory.RegisterVariable(DataVar.SHORT, 2); // MW0 - Load
+        memory.RegisterVariable(DataVar.SHORT, 8); // MW2 - Value to Add
 
         var stlCode = new StringBuilder()
             .AppendLine("L      MW0")    // Load MW0-8 to accumulator
+            .AppendLine("L      MW2")    // Subtract MW2-2 from accumulator
             .AppendLine("SUB    MW2")    // Subtract MW2-2 from accumulator
             .AppendLine("=      MW0")    // Store result in MW0
             .ToString();
@@ -47,7 +49,7 @@ public class BasicOperationsTests
 
         runner.Execute();
 
-        short result = memory.GetValue<short>(new PLCAddress("MW0"), DataVar.INT);
+        short result = memory.GetValue<short>(new PLCAddress("MW0"), DataVar.SHORT);
         Assert.Equal(-6, result);
     }
 
@@ -57,8 +59,8 @@ public class BasicOperationsTests
         var memory = new MemoryModel();
         memory.RegisterVariable(DataVar.BOOL, true); // M0.0 - Condition
         memory.RegisterVariable(DataVar.BOOL, true); // M0.1 - Condition
-        memory.RegisterVariable(DataVar.INT, 5);  // MW2 - Load
-        memory.RegisterVariable(DataVar.INT, 3);  // MW4 - Value to Add
+        memory.RegisterVariable(DataVar.SHORT, 5);  // MW2 - Load
+        memory.RegisterVariable(DataVar.SHORT, 3);  // MW4 - Value to Add
 
         var stlCode = new StringBuilder()
             .AppendLine("L      M0.0")      // Check condition
@@ -66,6 +68,7 @@ public class BasicOperationsTests
             .AppendLine("JC     END")       // Jump to END if condition is false                                     
             .AppendLine("DEADLABEL:")       // Random label to see if it breaks                                    
             .AppendLine("L      MW2")       // Add MW2 to accumulator
+            .AppendLine("L      MW4")       // Add MW2 to accumulator
             .AppendLine("ADD    MW4")       // Add MW4 to accumulator
             .AppendLine("=      MW2")       // Store result in MW0
             .AppendLine("END:")                 // Label: END
@@ -76,7 +79,7 @@ public class BasicOperationsTests
 
         runner.Execute();
 
-        short result = memory.GetValue<short>(new PLCAddress("MW2"), DataVar.INT);
+        short result = memory.GetValue<short>(new PLCAddress("MW2"), DataVar.SHORT);
         Assert.Equal(8, result);
     }
 
@@ -86,8 +89,8 @@ public class BasicOperationsTests
         var memory = new MemoryModel();
         memory.RegisterVariable(DataVar.BOOL, true); // M0.0 - Condition
         memory.RegisterVariable(DataVar.BOOL, false); // M0.1 - Condition
-        memory.RegisterVariable(DataVar.INT, 5);  // MW2 - Load
-        memory.RegisterVariable(DataVar.INT, 3);  // MW4 - Value to Add
+        memory.RegisterVariable(DataVar.SHORT, 5);  // MW2 - Load
+        memory.RegisterVariable(DataVar.SHORT, 3);  // MW4 - Value to Add
 
         var stlCode = new StringBuilder()
             .AppendLine("L      M0.0")      // Check condition
@@ -104,7 +107,7 @@ public class BasicOperationsTests
 
         runner.Execute();
 
-        short result = memory.GetValue<short>(new PLCAddress("MW2"), DataVar.INT);
+        short result = memory.GetValue<short>(new PLCAddress("MW2"), DataVar.SHORT);
         Assert.Equal(5, result);
     }
 

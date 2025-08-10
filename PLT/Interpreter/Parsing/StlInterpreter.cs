@@ -10,8 +10,12 @@ internal partial class StlInterpreter
     private readonly MemoryModel _memory;
     private int _accu1;
     private int _accu2;
+    private StatusFlags _statusFlags;
 
+    internal StatusFlags GetStatusFlags() => _statusFlags;
     internal MemoryModel GetMemory() => _memory;
+    internal bool GetRLO() => GetStatusFlags().RLO;
+    internal bool SetRLO(bool value) => GetStatusFlags().RLO = value;
 
     internal bool GetAccumulator1() => (_accu1 & 1) != 0;
     internal void SetAccumulator1(bool value)
@@ -64,10 +68,13 @@ internal partial class StlInterpreter
     public StlInterpreter(MemoryModel memory)
     {
         _memory = memory;
+        _statusFlags = new StatusFlags(this);
     }
 
     public void L(string operand)
     {
+        SetIntAccumulator2(GetIntAccumulator1());
+
         var addr = new PLCAddress(operand);
         addr.DataType.Accept(new LoadOperationVisitor(this, addr));
     }

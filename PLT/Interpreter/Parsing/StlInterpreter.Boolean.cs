@@ -8,49 +8,50 @@ namespace PLT.Interpreter.Parsing;
 internal partial class StlInterpreter
 {
 
-     public void LN(string operand)
+    public void LN(string operand)
     {
-        SetAccumulator1(!_memory.GetBit(new PLCAddress(operand)));
+        SetIntAccumulator2(GetIntAccumulator1());
+        SetRLO(!_memory.GetBit(new PLCAddress(operand)));
     }
 
     public void A(string operand)
     {
-        SetAccumulator1(GetAccumulator1() & _memory.GetBit(new PLCAddress(operand)));
+        SetRLO(GetRLO() & _memory.GetBit(new PLCAddress(operand)));
     }
 
     public void AN(string operand)
     {
-        SetAccumulator1(GetAccumulator1() & !_memory.GetBit(new PLCAddress(operand)));
+        SetRLO(GetRLO() & !_memory.GetBit(new PLCAddress(operand)));
     }
 
     public void O(string operand)
     {
-        SetAccumulator1(GetAccumulator1() | _memory.GetBit(new PLCAddress(operand)));
+        SetRLO(GetRLO() | _memory.GetBit(new PLCAddress(operand)));
     }
 
     public void ON(string operand)
     {
-        SetAccumulator1(GetAccumulator1() | !_memory.GetBit(new PLCAddress(operand)));
+        SetRLO(GetRLO() | !_memory.GetBit(new PLCAddress(operand)));
     }
 
     public void X(string operand)
     {
-        SetAccumulator1(GetAccumulator1() ^ _memory.GetBit(new PLCAddress(operand)));
+        SetRLO(GetRLO() ^ _memory.GetBit(new PLCAddress(operand)));
     }
 
     public void NOT(string? operand = null)
     {
-        SetAccumulator1(!GetAccumulator1());
+        SetRLO(!GetRLO());
     }
 
     public void SET(string? operand = null)
     {
-        SetAccumulator1(true);
+        SetRLO(true);
     }
 
     public void CLR(string? operand = null)
     {
-        SetAccumulator1(false);
+        SetRLO(false);
     }
 
     // public void S(string operand)

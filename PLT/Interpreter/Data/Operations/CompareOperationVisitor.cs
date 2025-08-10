@@ -62,7 +62,7 @@ internal class CompareOperationVisitor : AccumulatorOperationVisitorBase
         var ac2 = Interpreter.GetMemory().GetValue<int>(Addr, DataVar.INT);
         Interpreter.SetIntAccumulator2(ac2);
 
-        Interpreter.SetAccumulator1(CompareSigned(ac1, ac2));
+        Interpreter.SetRLO(CompareSigned(ac1, ac2));
     }
 
     public override void VisitShort()
@@ -71,7 +71,7 @@ internal class CompareOperationVisitor : AccumulatorOperationVisitorBase
         var ac2 = Interpreter.GetMemory().GetValue<short>(Addr, DataVar.SHORT);
         Interpreter.SetShortAccumulator2(ac2);
 
-        Interpreter.SetAccumulator1(CompareSigned(ac1, ac2));
+        Interpreter.SetRLO(CompareSigned(ac1, ac2));
     }
 
     public override void VisitWord()
@@ -80,7 +80,7 @@ internal class CompareOperationVisitor : AccumulatorOperationVisitorBase
         var ac2 = Interpreter.GetMemory().GetValue<ushort>(Addr, DataVar.WORD);
         Interpreter.SetUShortAccumulator2(ac2);
 
-        Interpreter.SetAccumulator1(CompareUnsigned(ac1, ac2));
+        Interpreter.SetRLO(CompareUnsigned(ac1, ac2));
     }
 
     public override void VisitDWord()
@@ -89,7 +89,7 @@ internal class CompareOperationVisitor : AccumulatorOperationVisitorBase
         var ac2 = Interpreter.GetMemory().GetValue<uint>(Addr, DataVar.DWORD);
         Interpreter.SetUIntAccumulator2(ac2);
 
-        Interpreter.SetAccumulator1(CompareUnsigned(ac1, ac2));
+        Interpreter.SetRLO(CompareUnsigned(ac1, ac2));
     }
 
     public override void VisitReal()

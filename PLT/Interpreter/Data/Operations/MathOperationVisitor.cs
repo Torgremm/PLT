@@ -61,41 +61,36 @@ internal class MathOperationVisitor : AccumulatorOperationVisitorBase
     public override void VisitInt()
     {
         var ac1 = Interpreter.GetIntAccumulator1();
-        var ac2 = Interpreter.GetMemory().GetValue<int>(Addr, DataVar.INT);
-        Interpreter.SetIntAccumulator2(ac2);
-        Interpreter.SetIntAccumulator1(PerformSigned(ac1, ac2));
+        var ac2 = Interpreter.GetIntAccumulator2();
+        Interpreter.SetIntAccumulator1(PerformSigned(ac2, ac1));
     }
 
     public override void VisitShort()
     {
         var ac1 = Interpreter.GetShortAccumulator1();
-        var ac2 = Interpreter.GetMemory().GetValue<short>(Addr, DataVar.SHORT);
-        Interpreter.SetShortAccumulator2(ac2);
-        Interpreter.SetShortAccumulator1(PerformSigned(ac1, ac2));
+        var ac2 = Interpreter.GetShortAccumulator2();
+        Interpreter.SetShortAccumulator1(PerformSigned(ac2, ac1));
     }
 
     public override void VisitWord()
     {
         var ac1 = Interpreter.GetUShortAccumulator1();
-        var ac2 = Interpreter.GetMemory().GetValue<ushort>(Addr, DataVar.WORD);
-        Interpreter.SetUShortAccumulator2(ac2);
-        Interpreter.SetUShortAccumulator1(PerformUnsigned(ac1, ac2));
+        var ac2 = Interpreter.GetUShortAccumulator2();
+        Interpreter.SetUShortAccumulator1(PerformUnsigned(ac2, ac1));
     }
 
     public override void VisitDWord()
     {
         var ac1 = Interpreter.GetUIntAccumulator1();
-        var ac2 = Interpreter.GetMemory().GetValue<uint>(Addr, DataVar.DWORD);
-        Interpreter.SetUIntAccumulator2(ac2);
-        Interpreter.SetUIntAccumulator1(PerformUnsigned(ac1, ac2));
+        var ac2 = Interpreter.GetUIntAccumulator2();
+        Interpreter.SetUIntAccumulator1(PerformUnsigned(ac2, ac1));
     }
 
     public override void VisitReal()
     {
         var ac1 = Interpreter.GetFloatAccumulator1();
-        var ac2 = Interpreter.GetMemory().GetValue<float>(Addr, DataVar.REAL);
-        Interpreter.SetFloatAccumulator2(ac2);
-        Interpreter.SetFloatAccumulator1(PerformReal(ac1, ac2));
+        var ac2 = Interpreter.GetFloatAccumulator2();
+        Interpreter.SetFloatAccumulator1(PerformReal(ac2, ac1));
     }
 
     public override void VisitBool()

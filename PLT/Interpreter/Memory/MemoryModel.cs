@@ -30,8 +30,11 @@ public partial class MemoryModel
             int alignment = variableType switch //Siemens stack logic
             {
                 DataVar.BYTE => 1,
-                DataVar.WORD or DataVar.INT => 2,
-                DataVar.DWORD or DataVar.REAL => 4,
+                DataVar.SHORT => 2,           // SHORT = 2 bytes
+                DataVar.WORD => 2,            // WORD = 2 bytes (if still used)
+                DataVar.INT => 4,             // INT = 4 bytes now (double word)
+                DataVar.DWORD => 4,
+                DataVar.REAL => 4,
                 _ => throw new ArgumentOutOfRangeException(nameof(variableType))
             };
 
@@ -72,7 +75,8 @@ public partial class MemoryModel
             DataVar.BOOL => 1,
             DataVar.BYTE => 8,
             DataVar.WORD => 16,
-            DataVar.INT => 16,
+            DataVar.SHORT => 16,
+            DataVar.INT => 32,
             DataVar.DWORD => 32,
             DataVar.REAL => 32,
             _ => throw new ArgumentOutOfRangeException(nameof(type), $"Unsupported type: {type}")
@@ -116,10 +120,12 @@ public partial class MemoryModel
                 break;
 
             case DataVar.WORD:
-            case DataVar.INT:
+            case DataVar.SHORT:
                 BitConverter.GetBytes(Convert.ToInt16(value)).CopyTo(targetSpan);
                 break;
-
+            case DataVar.INT:
+                BitConverter.GetBytes(Convert.ToInt32(value)).CopyTo(targetSpan);
+                break;
             case DataVar.DWORD:
                 BitConverter.GetBytes(Convert.ToUInt32(value)).CopyTo(targetSpan);
                 break;
@@ -143,7 +149,8 @@ public partial class MemoryModel
             DataVar.BOOL => GetBit(address),
             DataVar.BYTE => sourceSpan[0],
             DataVar.WORD => BitConverter.ToUInt16(sourceSpan),
-            DataVar.INT => BitConverter.ToInt16(sourceSpan),
+            DataVar.SHORT => BitConverter.ToInt16(sourceSpan),
+            DataVar.INT => BitConverter.ToInt32(sourceSpan),
             DataVar.DWORD => BitConverter.ToUInt32(sourceSpan),
             DataVar.REAL => BitConverter.ToSingle(sourceSpan),
             _ => throw new ArgumentOutOfRangeException(nameof(type))

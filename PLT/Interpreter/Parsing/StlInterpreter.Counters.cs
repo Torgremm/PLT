@@ -27,6 +27,8 @@ internal partial class StlInterpreter
 
     public void LC(string operand)
     {
+        SetIntAccumulator2(GetIntAccumulator1());
+
         var addr = new PLCAddress(operand);
         addr.DataType.Accept(new LoadOperationVisitor(this, addr)); //Set Accu1 with counter value
         ITB(GetUShortAccumulator1());
