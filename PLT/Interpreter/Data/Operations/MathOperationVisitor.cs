@@ -18,37 +18,81 @@ internal class MathOperationVisitor : AccumulatorOperationVisitorBase
         if (_type == MathOperationType.DIV && right == T.Zero)
             throw new DivideByZeroException("Division by zero on signed type");
 
-        return _type switch
+        T result;
+        
+        bool overflow = false;
+
+        try
         {
-            MathOperationType.ADD => left + right,
-            MathOperationType.SUB => left - right,
-            MathOperationType.MUL => left * right,
-            MathOperationType.DIV => left / right,
-            _ => throw new InvalidOperationException($"Unknown operation type: {_type}")
-        };
+            result = _type switch
+            {
+                MathOperationType.ADD => checked(left + right),
+                MathOperationType.SUB => checked(left - right),
+                MathOperationType.MUL => checked(left * right),
+                MathOperationType.DIV => left / right,
+                _ => throw new InvalidOperationException($"Unknown operation type: {_type}")
+            };
+        }
+        catch (OverflowException)
+        {
+            result = _type switch
+            {
+                MathOperationType.ADD => left + right,
+                MathOperationType.SUB => left - right,
+                MathOperationType.MUL => left * right,
+                MathOperationType.DIV => left / right,
+                _ => throw new InvalidOperationException($"Unknown operation type: {_type}")
+            };
+            overflow = true;
+        }
+
+        Interpreter.GetStatusFlags().OV = overflow;
+        return result;
     }
-    
+
     private T PerformUnsigned<T>(T left, T right) where T : IBinaryInteger<T>, IUnsignedNumber<T>
     {
         if (_type == MathOperationType.DIV && right == T.Zero)
             throw new DivideByZeroException("Division by zero on unsigned type");
 
-        return _type switch
+        T result;
+
+        bool overflow = false;
+
+        try
         {
-            MathOperationType.ADD => left + right,
-            MathOperationType.SUB => left - right,
-            MathOperationType.MUL => left * right,
-            MathOperationType.DIV => left / right,
-            _ => throw new InvalidOperationException($"Unknown operation type: {_type}")
-        };
+            result = _type switch
+            {
+                MathOperationType.ADD => checked(left + right),
+                MathOperationType.SUB => checked(left - right),
+                MathOperationType.MUL => checked(left * right),
+                MathOperationType.DIV => left / right,
+                _ => throw new InvalidOperationException($"Unknown operation type: {_type}")
+            };
+        }
+        catch (OverflowException)
+        {
+            result = _type switch
+            {
+                MathOperationType.ADD => left + right,
+                MathOperationType.SUB => left - right,
+                MathOperationType.MUL => left * right,
+                MathOperationType.DIV => left / right,
+                _ => throw new InvalidOperationException($"Unknown operation type: {_type}")
+            };
+            overflow = true;
+        }
+
+        Interpreter.GetStatusFlags().OV = overflow;
+        return result;
     }
-    
+
     private T PerformReal<T>(T left, T right) where T : IFloatingPoint<T>
     {
         if (_type == MathOperationType.DIV && right == T.Zero)
             throw new DivideByZeroException("Division by zero on real type");
 
-        return _type switch
+        T result = _type switch
         {
             MathOperationType.ADD => left + right,
             MathOperationType.SUB => left - right,
@@ -56,6 +100,11 @@ internal class MathOperationVisitor : AccumulatorOperationVisitorBase
             MathOperationType.DIV => left / right,
             _ => throw new InvalidOperationException($"Unknown operation type: {_type}")
         };
+
+        if (T.IsNaN(result) || T.IsInfinity(result))
+            Interpreter.GetStatusFlags().OV = true;
+
+        return result;
     }
 
     public override void VisitInt()

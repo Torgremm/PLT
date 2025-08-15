@@ -6,7 +6,6 @@ namespace PLT.Interpreter.Data.Operations;
 
 internal class CompareOperationVisitor : AccumulatorOperationVisitorBase
 {
-    private const float eps = 0.00001f;
     private readonly ComparisonType _type;
     public CompareOperationVisitor(StlInterpreter interpreter, PLCAddress addr, ComparisonType type) : base(interpreter, addr)
     {
@@ -15,43 +14,63 @@ internal class CompareOperationVisitor : AccumulatorOperationVisitorBase
 
     private bool CompareSigned<T>(T left, T right) where T : IBinaryInteger<T>
     {
+        bool less = left < right;
+        bool greater = left > right;
+        bool equal = left == right;
+
+        Interpreter.GetStatusFlags().CC0 = less || equal;
+        Interpreter.GetStatusFlags().CC1 = greater || equal;
+
         return _type switch
         {
-            ComparisonType.Equal => left == right,
-            ComparisonType.NotEqual => left != right,
-            ComparisonType.Less => left < right,
-            ComparisonType.LessOrEqual => left <= right,
-            ComparisonType.Greater => left > right,
-            ComparisonType.GreaterOrEqual => left >= right,
+            ComparisonType.Equal => equal,
+            ComparisonType.NotEqual => less || greater,
+            ComparisonType.Less => less,
+            ComparisonType.LessOrEqual => less || equal,
+            ComparisonType.Greater => greater,
+            ComparisonType.GreaterOrEqual => greater || equal,
             _ => throw new InvalidOperationException($"Unknown comparison type: {_type}")
         };
     }
 
     private bool CompareUnsigned<T>(T left, T right) where T : IBinaryInteger<T>, IUnsignedNumber<T>
     {
+        bool less = left < right;
+        bool greater = left > right;
+        bool equal = left == right;
+
+        Interpreter.GetStatusFlags().CC0 = less || equal;
+        Interpreter.GetStatusFlags().CC1 = greater || equal;
+
         return _type switch
         {
-            ComparisonType.Equal => left == right,
-            ComparisonType.NotEqual => left != right,
-            ComparisonType.Less => left < right,
-            ComparisonType.LessOrEqual => left <= right,
-            ComparisonType.Greater => left > right,
-            ComparisonType.GreaterOrEqual => left >= right,
+            ComparisonType.Equal => equal,
+            ComparisonType.NotEqual => less || greater,
+            ComparisonType.Less => less,
+            ComparisonType.LessOrEqual => less || equal,
+            ComparisonType.Greater => greater,
+            ComparisonType.GreaterOrEqual => greater || equal,
             _ => throw new InvalidOperationException($"Unknown comparison type: {_type}")
         };
     }
 
     private bool CompareReal(float left, float right)
     {
-        float diff = Math.Abs(left - right);
+        bool less = left < right;
+        bool greater = left > right;
+        bool equal = left == right;
+
+        Interpreter.GetStatusFlags().CC0 = less || equal;
+        Interpreter.GetStatusFlags().CC1 = greater || equal;
+
         return _type switch
         {
-            ComparisonType.Equal => diff < eps,
-            ComparisonType.NotEqual => diff >= eps,
-            ComparisonType.Less => left < right && diff >= eps,
-            ComparisonType.LessOrEqual => left < right || diff < eps,
-            ComparisonType.Greater => left > right && diff >= eps,
-            ComparisonType.GreaterOrEqual => left > right || diff < eps,
+            ComparisonType.Equal => equal,
+            ComparisonType.NotEqual => less || greater,
+            ComparisonType.Less => less,
+            ComparisonType.LessOrEqual => less || equal,
+            ComparisonType.Greater => greater,
+            ComparisonType.GreaterOrEqual => greater || equal,
             _ => throw new InvalidOperationException($"Unknown comparison type: {_type}")
         };
     }
@@ -98,7 +117,7 @@ internal class CompareOperationVisitor : AccumulatorOperationVisitorBase
         var ac2 = Interpreter.GetMemory().GetValue<float>(Addr, DataVar.REAL);
         Interpreter.SetFloatAccumulator2(ac2);
 
-        Interpreter.SetAccumulator1(CompareReal(ac1,ac2));
+        Interpreter.SetRLO(CompareReal(ac1,ac2));
     }
 
     public override void VisitBool()

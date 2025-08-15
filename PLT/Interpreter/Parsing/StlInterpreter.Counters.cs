@@ -46,7 +46,7 @@ internal partial class StlInterpreter
         _memory.DecrementCounter(index);
     }
 
-    public void S(string operand)
+    public void S(string operand) // Must work on both bit and counters
     {
         int index = CounterAddressToIndex(operand);
 
@@ -69,7 +69,7 @@ internal partial class StlInterpreter
         }
     }
 
-    public void R(string operand)
+    public void R(string operand) // Must work on both bit and counters
     {
         int index = CounterAddressToIndex(operand);
 

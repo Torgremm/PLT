@@ -39,29 +39,53 @@ internal partial class StlInterpreter
         SetRLO(GetRLO() ^ _memory.GetBit(new PLCAddress(operand)));
     }
 
-    public void NOT(string? operand = null)
+    public void XN(string operand)
+    {
+        SetRLO(GetRLO() ^ !_memory.GetBit(new PLCAddress(operand)));
+    }
+
+    public void NOT()
     {
         SetRLO(!GetRLO());
     }
 
-    public void SET(string? operand = null)
+    public void SET()
     {
         SetRLO(true);
     }
 
-    public void CLR(string? operand = null)
+    public void CLR()
     {
         SetRLO(false);
     }
 
-    // public void S(string operand)
-    // {
-    //     _memory.SetBit(new PLCAddress(operand), true);
-    // }
+    public void SAVE()
+    {
+        GetStatusFlags().BR = GetRLO();
+    }
 
-    // public void R(string operand)
-    // {
-    //     _memory.SetBit(new PLCAddress(operand), false);
-    // }
+    public void FP(string operand)
+    {
+        var addr = new PLCAddress(operand);
+        bool prev = _memory.GetBit(addr);
+        bool current = GetRLO();
+
+        bool risingEdge = !prev && current;
+        SetRLO(risingEdge);
+
+        _memory.SetBit(addr, current);
+    }
+
+    public void FN(string operand)
+    {
+        var addr = new PLCAddress(operand);
+        bool prev = _memory.GetBit(addr);
+        bool current = GetRLO();
+
+        bool fallingEdge = prev && !current;
+        SetRLO(fallingEdge);
+
+        _memory.SetBit(addr, current);
+    }
 
 }

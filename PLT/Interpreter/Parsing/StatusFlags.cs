@@ -20,8 +20,8 @@ internal class StatusFlags
     public bool STA { get; set; }
     public bool BR { get; set; }
 
-    public int CC0 {get; set; }
-    public int CC1 {get; set; }
+    public bool CC0 {get; set; }
+    public bool CC1 {get; set; }
 
     public bool RLO
     {
