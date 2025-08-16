@@ -8,40 +8,45 @@ namespace PLT.Interpreter.Parsing;
 internal partial class StlInterpreter
 {
 
+    //private static readonly PLCAddress dummyAddress = new PLCAddress("MW0");
+    // private DataVar GetDataVar(string c)
+    // {
+    //     return c switch
+    //     {
+    //         "D" => DataVar.INT,
+    //         "I" => DataVar.SHORT,
+    //         "R" => DataVar.REAL,
+    //         _ => throw new NotSupportedException($"Data type '{c}' is not supported.")
+    //     };
+    // }
     public void EQ(string operand)
     {
-        var addr = new PLCAddress(operand);
-        addr.DataType.Accept(new CompareOperationVisitor(this, addr, ComparisonType.Equal));
+        GetDataVar(operand).Accept(new CompareOperationVisitor(this, dummyAddress, ComparisonType.Equal));
     }
 
     public void NEQ(string operand)
     {
-        var addr = new PLCAddress(operand);
-        addr.DataType.Accept(new CompareOperationVisitor(this, addr, ComparisonType.NotEqual));
+        GetDataVar(operand).Accept(new CompareOperationVisitor(this, dummyAddress, ComparisonType.NotEqual));
     }
 
     public void LEQ(string operand)
     {
-        var addr = new PLCAddress(operand);
-        addr.DataType.Accept(new CompareOperationVisitor(this, addr, ComparisonType.LessOrEqual));
+        GetDataVar(operand).Accept(new CompareOperationVisitor(this, dummyAddress, ComparisonType.LessOrEqual));
     }
 
     public void GEQ(string operand)
     {
-        var addr = new PLCAddress(operand);
-        addr.DataType.Accept(new CompareOperationVisitor(this, addr, ComparisonType.GreaterOrEqual));
+        GetDataVar(operand).Accept(new CompareOperationVisitor(this, dummyAddress, ComparisonType.GreaterOrEqual));
     }
 
     public void LT(string operand)
     {
-        var addr = new PLCAddress(operand);
-        addr.DataType.Accept(new CompareOperationVisitor(this, addr, ComparisonType.Less));
+        GetDataVar(operand).Accept(new CompareOperationVisitor(this, dummyAddress, ComparisonType.Less));
     }
 
     public void GT(string operand)
     {
-        var addr = new PLCAddress(operand);
-        addr.DataType.Accept(new CompareOperationVisitor(this, addr, ComparisonType.Greater));
+        GetDataVar(operand).Accept(new CompareOperationVisitor(this, dummyAddress, ComparisonType.Greater));
     }
 
 }

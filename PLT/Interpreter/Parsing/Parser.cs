@@ -56,7 +56,7 @@ static internal class Parser
     private static string FilterOperations(string code)
     {
         var comparisonPattern = new Regex(@"(<=|>=|<>|=|<|>)[A-Z]?", RegexOptions.Compiled);
-        var typedMathPattern = new Regex(@"([\+\-\*/])([A-Z])?", RegexOptions.Compiled);
+        var typedMathPattern = new Regex(@"([\+\-\*/])([A-Z])", RegexOptions.Compiled);
 
         code = comparisonPattern.Replace(code, match =>
         {

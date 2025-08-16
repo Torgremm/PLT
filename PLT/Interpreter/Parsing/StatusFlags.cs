@@ -14,8 +14,8 @@ internal class StatusFlags
         _interpreter = interpreter;
     }
 
-    public bool OV { get; set; }
-    public bool OS { get; set; }
+    public bool OV { get; set; } //Overflow
+    public bool OS { get; set; } 
     public bool OR { get; set; }
     public bool STA { get; set; }
     public bool BR { get; set; }
