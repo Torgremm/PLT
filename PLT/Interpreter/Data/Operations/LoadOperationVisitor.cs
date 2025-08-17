@@ -8,6 +8,7 @@ internal class LoadOperationVisitor : AccumulatorOperationVisitorBase
     {
     }
 
+    //Only unsigned accumulators are used since they carry raw byte data.
     public override void VisitBool()
     {
         var bit = Interpreter.GetMemory().GetBit(Addr);
@@ -16,14 +17,14 @@ internal class LoadOperationVisitor : AccumulatorOperationVisitorBase
 
     public override void VisitInt()
     {
-        var value = Interpreter.GetMemory().GetValue<int>(Addr, DataVar.INT);
-        Interpreter.SetIntAccumulator1(value);
+        var value = Interpreter.GetMemory().GetValue<uint>(Addr, DataVar.INT);
+        Interpreter.SetUIntAccumulator1(value);
     }
 
     public override void VisitShort()
     {
-        var value = Interpreter.GetMemory().GetValue<short>(Addr, DataVar.SHORT);
-        Interpreter.SetShortAccumulator1(value);
+        var value = Interpreter.GetMemory().GetValue<ushort>(Addr, DataVar.SHORT);
+        Interpreter.SetUShortAccumulator1(value);
     }
 
     public override void VisitWord()
@@ -45,7 +46,7 @@ internal class LoadOperationVisitor : AccumulatorOperationVisitorBase
 
     public override void VisitReal()
     {
-        var value = Interpreter.GetMemory().GetValue<float>(Addr, DataVar.REAL);
-        Interpreter.SetFloatAccumulator1(value);
+        float value = Interpreter.GetMemory().GetValue<float>(Addr, DataVar.REAL);
+        Interpreter.SetUIntAccumulator1(BitConverter.SingleToUInt32Bits(value));
     }
 }

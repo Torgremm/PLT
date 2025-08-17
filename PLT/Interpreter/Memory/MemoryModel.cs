@@ -118,8 +118,9 @@ public partial class MemoryModel
             case DataVar.BYTE:
                 targetSpan[0] = Convert.ToByte(value);
                 break;
-
             case DataVar.WORD:
+                BitConverter.GetBytes(Convert.ToUInt16(value)).CopyTo(targetSpan);
+                break;
             case DataVar.SHORT:
                 BitConverter.GetBytes(Convert.ToInt16(value)).CopyTo(targetSpan);
                 break;
@@ -129,7 +130,6 @@ public partial class MemoryModel
             case DataVar.DWORD:
                 BitConverter.GetBytes(Convert.ToUInt32(value)).CopyTo(targetSpan);
                 break;
-
             case DataVar.REAL:
                 BitConverter.GetBytes(Convert.ToSingle(value)).CopyTo(targetSpan);
                 break;

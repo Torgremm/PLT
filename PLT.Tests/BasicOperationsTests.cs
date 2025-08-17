@@ -19,7 +19,7 @@ public class BasicOperationsTests
         var stlCode = new StringBuilder()
             .AppendLine("L      MW0")    // Load MW0-8 to accumulator
             .AppendLine("L      MW2")    // Load MW2-2 to accumulator
-            .AppendLine("+I")    // Add MW2-2 from accumulator :: QUIRK FOR NOW
+            .AppendLine("+I")           // Add MW2-2 from accumulator
             .AppendLine("=      MW0")    // Store result in MW0
             .ToString();
 
@@ -41,7 +41,7 @@ public class BasicOperationsTests
         var stlCode = new StringBuilder()
             .AppendLine("L      MW0")    // Load MW0-8 to accumulator
             .AppendLine("L      MW2")    // Subtract MW2-2 from accumulator
-            .AppendLine("-I")    // Subtract MW2-2 from accumulator
+            .AppendLine("-I")           // Subtract MW2-2 from accumulator
             .AppendLine("=      MW0")    // Sjtore result in MW0
             .ToString();
 
@@ -69,7 +69,7 @@ public class BasicOperationsTests
             .AppendLine("DEADLABEL:")       // Random label to see if it breaks                                    
             .AppendLine("L      MW2")       // Add MW2 to accumulator
             .AppendLine("L      MW4")       // Add MW2 to accumulator
-            .AppendLine("+I")       // Add MW4 to accumulator
+            .AppendLine("+I")               // Add MW4 to accumulator
             .AppendLine("=      MW2")       // Store result in MW0
             .AppendLine("END:")                 // Label: END
             .AppendLine("NOP")                  // Do nothing
@@ -97,7 +97,7 @@ public class BasicOperationsTests
             .AppendLine("AN     M0.1")      // Check condition 2
             .AppendLine("JC     END")       // Jump to END if condition is false                                     
             .AppendLine("L      MW2")       // Add MW2 to accumulator
-            .AppendLine("+I")       // Add MW4 to accumulator
+            .AppendLine("+I")               // Add MW4 to accumulator
             .AppendLine("=      MW2")       // Store result in MW0
             .AppendLine("END:")                 // Label: END
             .AppendLine("NOP")                  // Do nothing
@@ -110,6 +110,8 @@ public class BasicOperationsTests
         short result = memory.GetValue<short>(new PLCAddress("MW2"), DataVar.SHORT);
         Assert.Equal(5, result);
     }
+
+    
 
 
 }

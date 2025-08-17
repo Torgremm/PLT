@@ -55,17 +55,12 @@ static internal class Parser
 
     private static string FilterOperations(string code)
     {
-        var comparisonPattern = new Regex(@"(<=|>=|<>|=|<|>)[A-Z]?", RegexOptions.Compiled);
+        var comparisonPattern = new Regex(@"([<=|>=|<>|=|<|>])([A-Z])?", RegexOptions.Compiled);
         var typedMathPattern = new Regex(@"([\+\-\*/])([A-Z])", RegexOptions.Compiled);
 
         code = comparisonPattern.Replace(code, match =>
         {
-            var op = match.Value;
-
-            if (op.Length > 2)
-                op = op.Substring(0, 2);
-
-            return op switch
+            var op = match.Groups[1].Value switch
             {
                 "<=" => "LEQ",
                 ">=" => "GEQ",
@@ -74,8 +69,11 @@ static internal class Parser
                 "<" => "LT",
                 ">" => "GT",
                 "=" => "STORE",
-                _ => op
+                _ => throw new InvalidOperationException()
             };
+
+            var type = match.Groups[2].Value;
+            return $"{op} {type}";
         });
 
         code = typedMathPattern.Replace(code, match =>
